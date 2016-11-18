@@ -1,0 +1,16 @@
+ protected void ExportExcelbyNPOI(string Excelname, DataTable dt)
+        {
+            string strSql = string.Empty;
+
+            strSql = "select * from PPS_S_EXCEL_EXPORT where menu_id='M9001' and seqno='0001' and language='zh_cn'";
+            DataTable Reference = OraDbHelper.ExecuteDataTable(strSql);
+
+            strSql = "select * from PPS_S_EXCEL_EXPORT_PARAMETER where menu_id='M9001' and seqno='0001'";
+            DataTable Parameter = OraDbHelper.ExecuteDataTable(strSql);
+
+            MemoryStream ms = ExportToExcel.DataTableToExcel_Flexible(dt, Reference, Parameter) as MemoryStream;
+            Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}.xls", Excelname));
+            Response.BinaryWrite(ms.ToArray());
+            ms.Close();
+            ms.Dispose();
+        }
