@@ -1,0 +1,9 @@
+DECLARE
+CURSOR curs IS SELECT table_name FROM user_tables;
+cn INT;
+BEGIN
+FOR cur IN curs LOOP
+EXECUTE IMMEDIATE 'select count(1) from ' || cur.table_name INTO cn;
+dbms_output.put_line(cur.table_name || ':' || cn);
+END LOOP;
+END;
