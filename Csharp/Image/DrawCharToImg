@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Services;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
+using System.IO;
+
+namespace WebApplication1
+{
+    /// <summary>
+    /// WebService1 的摘要说明
+    /// </summary>
+    [WebService(Namespace = "http://tempuri.org/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    // 若要允许使用 ASP.NET AJAX 从脚本中调用此 Web 服务，请取消注释以下行。 
+    // [System.Web.Script.Services.ScriptService]
+    public class WebService1 : System.Web.Services.WebService
+    {
+
+        [WebMethod]
+        public string HelloWorld()
+        {
+            return "Hello World";
+        }
+        [WebMethod]
+        public string DrawCharacter(string x)
+        {
+            return DrawImage(x);
+        }
+
+        private string DrawImage(string x)
+        {
+            MemoryStream ms = new MemoryStream(); 
+            //创建一字体风格 
+            Font rectangleFont = new Font("Arial", 10, FontStyle.Regular);
+            //创建整数变量 
+            int height = 25;
+            int width = 20;
+            //创建一张位图并且使用它创建一个
+            //Graphics对象
+            int len = x.Length;
+            int newWidth = (int)(width + (6.5 * (len - 1)));
+            Bitmap bmp = new Bitmap(newWidth, height, PixelFormat.Format24bppRgb);
+            Graphics g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.White);
+
+            g.DrawRectangle(Pens.Black, 1, 1, newWidth - 2, height - 2);
+            g.DrawString(x, rectangleFont, SystemBrushes.WindowText, new PointF(3,5));
+            
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            byte[] arr = new byte[ms.Length];
+            ms.Position = 0;
+            ms.Read(arr, 0, (int)ms.Length);
+            ms.Close();
+            String strbaser64 = Convert.ToBase64String(arr);
+            return strbaser64;
+        }
+        public void ShowImage(string str,string item)
+        {
+            byte[] arr = Convert.FromBase64String(str);
+            MemoryStream ms = new MemoryStream(arr);
+            Bitmap bmp = new Bitmap(ms);
+
+            bmp.Save(@"E:\" + item + ".JPG", System.Drawing.Imaging.ImageFormat.Jpeg);
+            
+            bmp.Dispose();
+            ms.Close();
+        }
+        
+    }
+}
+================================
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace WebApplication1
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            WebService1 ws = new WebService1();
+            List<string> list = new List<string> { "1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999", "0000000000", "p = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Qty);" };
+
+            foreach (string item in list)
+            {
+                string base64 = ws.DrawCharacter(item);
+                ws.ShowImage(base64,item);
+            }
+            
+        }
+
+        
+    }
+}
