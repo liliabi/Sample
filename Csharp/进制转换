@@ -1,0 +1,32 @@
+using System;
+
+namespace WebApplication1
+{
+    public class ConvertNumber
+    {
+        private const string X62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        public string ConvertTo62(int val)
+        {
+            string result = "";
+            while (val >= 62)
+            {
+                result = X62[val % 62] + result;
+                val /= 62;
+            }
+            if (val >= 0) result = X62[val] + result;
+            return result;
+        }
+
+        public int ConvertTo10(string str)
+        {
+            int result = 0;
+            int len = str.Length;
+            for (int i = len; i > 0; i--)
+            {
+                result += X62.IndexOf(str[i - 1]) * Convert.ToInt32(Math.Pow(62, len - i));
+            }
+            return result;
+        }
+    }
+}
