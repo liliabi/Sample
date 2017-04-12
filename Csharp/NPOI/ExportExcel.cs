@@ -489,7 +489,12 @@ namespace ExportExcel
             {
                 sheet.AutoSizeColumn(i);
             }
-
+            //AutoSizeColumn宽度不足以显示完字符,再增加10%
+            for (int i = 0; i < SourceTable.Columns.Count; i++)
+            {
+                sheet.SetColumnWidth(i, (int)(sheet.GetColumnWidth(i) * 1.1));
+            }
+            
             if (withHeader)
             {
                 sheet.CreateFreezePane(startRowCol[1], startRowCol[0] + 1);
